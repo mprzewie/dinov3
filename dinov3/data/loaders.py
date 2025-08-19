@@ -9,6 +9,7 @@ from typing import Any, Callable, List, Optional, TypeVar
 
 import torch
 from torch.utils.data import Sampler
+from torchvision.datasets import ImageFolder
 
 from .datasets import ADE20K, CocoCaptions, ImageNet, ImageNet22k
 from .samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
@@ -60,6 +61,8 @@ def _parse_dataset_str(dataset_str: str):
             kwargs["split"] = ImageNet.Split[kwargs["split"]]
     elif name == "ImageNet22k":
         class_ = ImageNet22k
+    elif name == "ImageFolder":
+        class_ = ImageFolder
     elif name == "ADE20K":
         class_ = ADE20K
         if "split" in kwargs:

@@ -23,7 +23,9 @@ class SubsetEx(Subset):
 
     def get_target(self, index: int) -> Any:
         actual_index = self._get_actual_index(index)
-        return self.dataset.get_target(actual_index)
+        if hasattr(self.dataset, "get_target"):
+            return self.dataset.get_target(actual_index)
+        return self.dataset[actual_index][1]
 
     @property
     def transforms(self):

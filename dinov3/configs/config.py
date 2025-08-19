@@ -38,18 +38,21 @@ class DinoV3SetupArgs:
 
 
 def apply_scaling_rules_to_cfg(cfg):  # to fix
-    assert distributed.is_enabled(), "Setup distributed to get global size !"
+    world_size = distributed.get_world_size() if distributed.is_enabled() else 1
+    if not distributed.is_enabled():
+        print("WARNING: distributed not enabled")
+
     if "schedules" in cfg:
         # For schedules v2, the scaling rules are applied when building the schedules, the config is not modified
         return cfg
 
     if cfg.optim.scaling_rule == "linear_wrt_256":
         old_lr = cfg.optim.lr
-        cfg.optim.lr *= cfg.train.batch_size_per_gpu * distributed.get_world_size() / 256.0
+        cfg.optim.lr *= cfg.train.batch_size_per_gpu * world_size / 256.0
         logger.info(f"linear scaling learning rate; old: {old_lr}, new: {cfg.optim.lr}")
     elif cfg.optim.scaling_rule == "sqrt_wrt_1024":
         old_lr = cfg.optim.lr
-        cfg.optim.lr *= 4 * math.sqrt(cfg.train.batch_size_per_gpu * distributed.get_world_size() / 1024.0)
+        cfg.optim.lr *= 4 * math.sqrt(cfg.train.batch_size_per_gpu * world_size / 1024.0)
         logger.info(f"sqrt scaling learning rate; old: {old_lr}, new: {cfg.optim.lr}")
     return cfg
 
