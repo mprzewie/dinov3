@@ -241,6 +241,8 @@ def make_eval_transform(config: TransformConfig):
     transform = make_classification_eval_transform(resize_size=config.resize_size, crop_size=config.crop_size)
     return transform
 
+def worker_init_fn(worker_id):
+    os.sched_setaffinity(0, range(os.cpu_count()))
 
 def make_eval_data_loader(
     *,
@@ -266,6 +268,7 @@ def make_eval_data_loader(
         shuffle=False,
         persistent_workers=False,
         collate_fn=pad_multilabel_and_collate if metric_type == ClassificationMetricType.ANY_MATCH_ACCURACY else None,
+        worker_init_fn=worker_init_fn,
     )
     return test_data_loader, class_mapping
 

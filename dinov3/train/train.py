@@ -317,6 +317,9 @@ def build_data_loader_from_cfg(
     else:
         sampler_type = SamplerType.SHARDED_INFINITE if cfg.train.cache_dataset else SamplerType.INFINITE
 
+    def worker_init_fn(worker_id):
+        os.sched_setaffinity(0, range(os.cpu_count()))
+
     data_loader = make_data_loader(
         dataset=dataset,
         batch_size=batch_size,
@@ -327,6 +330,7 @@ def build_data_loader_from_cfg(
         sampler_advance=start_iter * dataloader_batch_size_per_gpu,
         drop_last=True,
         collate_fn=collate_fn,
+        worker_init_fn=worker_init_fn,
     )
     return data_loader
 

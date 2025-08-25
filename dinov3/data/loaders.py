@@ -188,6 +188,7 @@ def make_data_loader(
     drop_last: bool = True,
     persistent_workers: bool = False,
     collate_fn: Optional[Callable[[List[T]], Any]] = None,
+    worker_init_fn: Optional[Callable[[int], Any]] = None,
 ):
     """
     Creates a data loader with the specified parameters.
@@ -225,6 +226,7 @@ def make_data_loader(
         drop_last=drop_last,
         persistent_workers=persistent_workers,
         collate_fn=collate_fn,
+        worker_init_fn=worker_init_fn,
     )
 
     try:
